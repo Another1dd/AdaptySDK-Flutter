@@ -24,24 +24,37 @@ class Adapty {
   static const String _channelName = 'flutter.adapty.com/adapty';
   static const MethodChannel _channel = const MethodChannel(_channelName);
 
-  static StreamController<String> _deferredPurchasesController = StreamController.broadcast();
-  static StreamController<GetPaywallsResult> _getPaywallsResultController = StreamController.broadcast();
-  static StreamController<AdaptyPurchaserInfo> _purchaserInfoUpdateController = StreamController.broadcast();
-  static StreamController<AdaptyPromo> _promosReceiveController = StreamController.broadcast();
+  static StreamController<String> _deferredPurchasesController =
+      StreamController.broadcast();
+  static StreamController<GetPaywallsResult> _getPaywallsResultController =
+      StreamController.broadcast();
+  static StreamController<AdaptyPurchaserInfo> _purchaserInfoUpdateController =
+      StreamController.broadcast();
+  static StreamController<AdaptyPromo> _promosReceiveController =
+      StreamController.broadcast();
 
-  static Stream<String> get deferredPurchasesStream => _deferredPurchasesController.stream;
-  static Stream<GetPaywallsResult> get getPaywallsResultStream => _getPaywallsResultController.stream;
-  static Stream<AdaptyPurchaserInfo> get purchaserInfoUpdateStream => _purchaserInfoUpdateController.stream;
-  static Stream<AdaptyPromo> get promosReceiveStream => _promosReceiveController.stream;
+  static Stream<String> get deferredPurchasesStream =>
+      _deferredPurchasesController.stream;
 
-  static Future<bool> activate() => _invokeMethodHandlingErrors(Method.activate);
+  static Stream<GetPaywallsResult> get getPaywallsResultStream =>
+      _getPaywallsResultController.stream;
+
+  static Stream<AdaptyPurchaserInfo> get purchaserInfoUpdateStream =>
+      _purchaserInfoUpdateController.stream;
+
+  static Stream<AdaptyPromo> get promosReceiveStream =>
+      _promosReceiveController.stream;
+
+  static Future<bool> activate() async =>
+      await _invokeMethodHandlingErrors(Method.activate);
 
   static void init() {
     _channel.setMethodCallHandler(_handleIncomingMethodCall);
   }
 
   static Future<void> setLogLevel(AdaptyLogLevel value) {
-    return _invokeMethodHandlingErrors(Method.setLogLevel, {Argument.value: value.index});
+    return _invokeMethodHandlingErrors(
+        Method.setLogLevel, {Argument.value: value.index});
   }
 
   static Future<AdaptyLogLevel> getLogLevel() async {
@@ -57,15 +70,19 @@ class Adapty {
     });
   }
 
-  static Future<GetPaywallsResult> getPaywalls({bool forceUpdate = false}) async {
-    final result = await _invokeMethodHandlingErrors<String>(Method.getPaywalls, {
+  static Future<GetPaywallsResult> getPaywalls(
+      {bool forceUpdate = false}) async {
+    final result =
+        await _invokeMethodHandlingErrors<String>(Method.getPaywalls, {
       Argument.forceUpdate: forceUpdate,
     });
     return GetPaywallsResult.fromMap(json.decode(result));
   }
 
-  static Future<AdaptyPurchaserInfo> getPurchaserInfo({bool forceUpdate = false}) async {
-    final result = await _invokeMethodHandlingErrors<String>(Method.getPurchaserInfo, {
+  static Future<AdaptyPurchaserInfo> getPurchaserInfo(
+      {bool forceUpdate = false}) async {
+    final result =
+        await _invokeMethodHandlingErrors<String>(Method.getPurchaserInfo, {
       Argument.forceUpdate: forceUpdate,
     });
     return AdaptyPurchaserInfo.fromMap(json.decode(result));
@@ -78,19 +95,23 @@ class Adapty {
   }
 
   static Future<MakePurchaseResult> makePurchase(AdaptyProduct product) async {
-    final result = await _invokeMethodHandlingErrors<String>(Method.makePurchase, {
+    final result =
+        await _invokeMethodHandlingErrors<String>(Method.makePurchase, {
       Argument.productId: product.vendorProductId,
-      if (product.variationId != null) Argument.variationId: product.variationId,
+      if (product.variationId != null)
+        Argument.variationId: product.variationId,
     });
     return MakePurchaseResult.fromJson(json.decode(result));
   }
 
   static Future<RestorePurchasesResult> restorePurchases() async {
-    final result = await _invokeMethodHandlingErrors<String>(Method.restorePurchases);
+    final result =
+        await _invokeMethodHandlingErrors<String>(Method.restorePurchases);
     return RestorePurchasesResult.fromJson(json.decode(result));
   }
 
-  static Future<bool> updateAttribution(Map attribution, {@required AdaptyAttributionNetwork source, String networkUserId}) {
+  static Future<bool> updateAttribution(Map attribution,
+      {@required AdaptyAttributionNetwork source, String networkUserId}) {
     return _invokeMethodHandlingErrors<bool>(Method.updateAttribution, {
       Argument.attribution: attribution,
       Argument.source: source.stringValue(),
@@ -112,17 +133,20 @@ class Adapty {
 
   static Future<void> setApnsToken(String token) {
     if (!Platform.isIOS) return null;
-    return _invokeMethodHandlingErrors<void>(Method.setApnsToken, {Argument.value: token});
+    return _invokeMethodHandlingErrors<void>(
+        Method.setApnsToken, {Argument.value: token});
   }
 
   static Future<void> handlePushNotification(Map userInfo) {
     if (!Platform.isIOS) return null;
-    return _invokeMethodHandlingErrors<void>(Method.handlePushNotification, {Argument.userInfo: userInfo});
+    return _invokeMethodHandlingErrors<void>(
+        Method.handlePushNotification, {Argument.userInfo: userInfo});
   }
 
   static Future<void> setFallbackPaywalls(String paywalls) {
     if (!Platform.isIOS) return null;
-    return _invokeMethodHandlingErrors<void>(Method.setFallbackPaywalls, {Argument.paywalls: paywalls});
+    return _invokeMethodHandlingErrors<void>(
+        Method.setFallbackPaywalls, {Argument.paywalls: paywalls});
   }
 
   static Future<AdaptyResult> validateReceipt(String receipt) async {
@@ -149,10 +173,12 @@ class Adapty {
     return null;
   }
 
-  static Future<MakePurchaseResult> makeDeferredPurchase(String productId) async {
+  static Future<MakePurchaseResult> makeDeferredPurchase(
+      String productId) async {
     if (!Platform.isIOS) return null;
 
-    final String result = await _invokeMethodHandlingErrors(Method.makeDeferredPurchase, {
+    final String result =
+        await _invokeMethodHandlingErrors(Method.makeDeferredPurchase, {
       Argument.productId: productId,
     });
     return MakePurchaseResult.fromJson(json.decode(result));
@@ -163,20 +189,23 @@ class Adapty {
   static Future<bool> newPushToken(String token) async {
     if (!Platform.isAndroid) return null;
 
-    final bool result = await _invokeMethodHandlingErrors(Method.newPushToken, {Argument.pushToken: token});
+    final bool result = await _invokeMethodHandlingErrors(
+        Method.newPushToken, {Argument.pushToken: token});
     return result;
   }
 
   static Future<bool> pushReceived(Map<String, String> message) async {
     if (!Platform.isAndroid) return null;
 
-    final bool result = await _invokeMethodHandlingErrors(Method.pushReceived, {Argument.pushMessage: message});
+    final bool result = await _invokeMethodHandlingErrors(
+        Method.pushReceived, {Argument.pushMessage: message});
     return result;
   }
 
   // ––––––– INTERNAL –––––––
 
-  static Future<T> _invokeMethodHandlingErrors<T>(String method, [dynamic arguments]) async {
+  static Future<T> _invokeMethodHandlingErrors<T>(String method,
+      [dynamic arguments]) async {
     try {
       return await _channel.invokeMethod<T>(method, arguments);
     } on PlatformException catch (e) {
@@ -192,11 +221,13 @@ class Adapty {
         return null;
       case Method.getPaywallsResult:
         var result = call.arguments as String;
-        _getPaywallsResultController.add(GetPaywallsResult.fromMap(json.decode(result)));
+        _getPaywallsResultController
+            .add(GetPaywallsResult.fromMap(json.decode(result)));
         return null;
       case Method.purchaserInfoUpdate:
         var result = call.arguments as String;
-        _purchaserInfoUpdateController.add(AdaptyPurchaserInfo.fromMap(json.decode(result)));
+        _purchaserInfoUpdateController
+            .add(AdaptyPurchaserInfo.fromMap(json.decode(result)));
         return null;
       case Method.promoReceived:
         var result = call.arguments as String;

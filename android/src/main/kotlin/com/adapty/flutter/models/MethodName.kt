@@ -24,6 +24,7 @@ enum class MethodName(val value: String) {
     companion object {
 
         fun fromValue(value: String) = when (value) {
+            ACTIVATE.value -> ACTIVATE
             IDENTIFY.value -> IDENTIFY
             SET_LOG_LEVEL.value -> SET_LOG_LEVEL
             LOG_SHOW_PAYWALL.value -> LOG_SHOW_PAYWALL
