@@ -65,6 +65,7 @@ class AdaptyFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
         if (!results.contains(result.hashCode())) {
             results.add(result.hashCode())
             when (MethodName.fromValue(call.method)) {
+                MethodName.ACTIVATE -> handleActivate(call, result)
                 MethodName.IDENTIFY -> handleIdentify(call, result)
                 MethodName.SET_LOG_LEVEL -> handleSetLogLevel(call, result)
                 MethodName.LOG_SHOW_PAYWALL -> handleLogShowPaywall(call)
@@ -107,7 +108,6 @@ class AdaptyFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
         channel = MethodChannel(binaryMessenger, CHANNEL_NAME)
         channel.setMethodCallHandler(this)
         pushHandler = AdaptyFlutterPushHandler(context)
-        activateOnLaunch(context)
     }
 
     private fun onNewActivityPluginBinding(binding: ActivityPluginBinding?) = if (binding == null) {
@@ -116,17 +116,25 @@ class AdaptyFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
         activity = binding.activity
     }
 
-    private fun activateOnLaunch(context: Context) {
-        val apiKey = context.packageManager
-                .getApplicationInfo(context.packageName, PackageManager.GET_META_DATA)
-                .metaData
-                ?.getString("AdaptyPublicSdkKey")
-                .orEmpty()
+    private fun handleActivate(@NonNull call: MethodCall, @NonNull result: Result) {
+        activity?.let { context->
+            val apiKey = context.packageManager
+                    .getApplicationInfo(context.packageName, PackageManager.GET_META_DATA)
+                    .metaData
+                    ?.getString("AdaptyPublicSdkKey")
+                    .orEmpty()
 
-        Adapty.activate(context, apiKey)
+            Adapty.activate(context, apiKey)
 
-        listenPurchaserInfoUpdates()
-        listenPromoUpdates()
+            listenPurchaserInfoUpdates()
+            listenPromoUpdates()
+
+            resultIfNeeded(result) {
+                result.success(true)
+            }
+        } ?: resultIfNeeded(result) {
+            result.success(false)
+        }
     }
 
     private fun handleIdentify(@NonNull call: MethodCall, @NonNull result: Result) {

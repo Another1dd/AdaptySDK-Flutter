@@ -1,6 +1,7 @@
 package com.adapty.flutter.models
 
 enum class MethodName(val value: String) {
+    ACTIVATE("activate"),
     IDENTIFY("identify"),
     SET_LOG_LEVEL("set_log_level"),
     LOG_SHOW_PAYWALL("log_show_paywall"),

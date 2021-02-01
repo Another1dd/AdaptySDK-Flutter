@@ -34,7 +34,9 @@ class Adapty {
   static Stream<AdaptyPurchaserInfo> get purchaserInfoUpdateStream => _purchaserInfoUpdateController.stream;
   static Stream<AdaptyPromo> get promosReceiveStream => _promosReceiveController.stream;
 
-  static void activate() {
+  static void activate() => _invokeMethodHandlingErrors(Method.activate);
+
+  static void init() {
     _channel.setMethodCallHandler(_handleIncomingMethodCall);
   }
 
